@@ -1,6 +1,6 @@
 # Summit Trail — Ak hiking game
 
-A small 2D, retro/pixel-style climbing game written in **Ak**. The mountain never ends: climb ledge to ledge, manage stamina, rest when needed, and see how high you can get. Your height and best height are shown in the HUD.
+A small 2D, retro/pixel-style climbing game written in **Ak**. The mountain never ends: jump from ledge to ledge and see how high you can get. Your height and best height are shown in the HUD.
 
 ![Start](docs/start.png)
 ![Climbing](docs/climbing.png)
@@ -18,10 +18,12 @@ ak game.aklang
 
 ## Controls
 
-- **Arrow keys** or **WASD** — move
-- **Space** — rest and recover stamina
-- **R** — restart
-- **Q** or **Esc** — quit
+- **Left / Right** or **A / D**: move
+- **Up**, **W** or **Space**: jump (hold it to keep hopping)
+- **R**: restart (after falling off the bottom of the screen)
+- **Q** or **Esc**: quit
+
+Jump from ledge to ledge. Fall below the screen and it's game over; your goal is the highest climb.
 
 ## Notes
 

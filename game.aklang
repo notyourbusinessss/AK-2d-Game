@@ -4,7 +4,7 @@
 (use "lib/x11.aklang")
 
 WW=640 WH=480
-GAP=55
+GAP=75
 SKY=(rgb 18 28 52)
 SNOW=(rgb 224 238 244)
 ROCK=(rgb 88 103 119)
@@ -14,26 +14,45 @@ TRAIL=(rgb 191 151 92)
 GOLD=(rgb 255 208 82)
 WHITE=(rgb 245 245 220)
 RED=(rgb 239 91 91)
-GREEN=(rgb 97 220 130)
 INK=(rgb 15 20 32)
 
 ; Ledge i sits GAP above ledge i-1 and is generated on demand, so the mountain never ends.
-; LED holds each ledge's left x; neighbours always overlap so there is always a way up.
+; LED holds each ledge's left x; neighbours always overlap so a jump always reaches the next one.
+; Ledge 0 is the ground. PH is the hiker's feet height, VH the vertical speed (up is positive).
 LED=[35]
-PX=75 PH=0 CAM=0 STAMINA=100 BEST=0 MESSAGE="Climb as high as you can!"
+PX=75 PH=0 VH=0 CAM=0 BEST=0 ONG=true OVER=false
+LEFT=false RIGHT=false UP=false RUN=true
+MESSAGE="Climb as high as you can!"
 (= (clamp v lo hi) (min hi (max lo v)))
 (= (grow n)
   (wh (< (# LED) n)
     (<- LED (+> LED (clamp (+ (lst LED) (- (rand 201) 100)) 10 480))))
   nil)
-(= (platform h x)
-  (grow (+ (// h GAP) 4))
-  found=false
-  lo=(max 0 (- (// h GAP) 1))
-  (for i (.. lo (+ lo 3))
-    (? (&& (abs (- h (* i GAP)))<34 x>=LED[i]-5 x<=LED[i]+145) (<- found true)))
-  found)
-(= (sy h) (- 385 (- h CAM)))
+(= (sy h) (int (- 385 (- h CAM))))
+(= (reset)
+  (<- LED [35]) (<- PX 75) (<- PH 0) (<- VH 0) (<- CAM 0) (<- ONG true) (<- OVER false)
+  (<- MESSAGE "Climb as high as you can!")
+  nil)
+(= (step)
+  (? OVER nil
+    (: (<- PX (clamp (+ PX (+ (? RIGHT 4 0) (? LEFT -4 0))) 0 626))
+       (? (&& ONG UP) (: (<- VH 12.5) (<- ONG false)))
+       (<- VH (- VH 0.55))
+       nh=(+ PH VH)
+       hit=nil
+       (? (<= VH 0)
+         (: lo=(max 0 (- (// PH GAP) 1))
+            (grow (+ lo 4))
+            (for i (.. lo (+ lo 3))
+              top=(* i GAP)
+              (? (&& hit==nil PH>=top nh<=top (|| i==0 (&& PX+10>=LED[i] PX+4<=LED[i]+150)))
+                (<- hit top)))))
+       (? hit!=nil (: (<- PH hit) (<- VH 0) (<- ONG true))
+                   (: (<- PH nh) (<- ONG false)))
+       (<- BEST (max BEST PH))
+       (<- CAM (max CAM (- PH 200)))
+       (? (> (sy PH) 520) (: (<- OVER true) (<- MESSAGE "You fell! Press R to try again.")))))
+  nil)
 (= (draw cv)
   (fill cv SKY)
   ; stars drift down slowly as you climb
@@ -43,68 +62,61 @@ PX=75 PH=0 CAM=0 STAMINA=100 BEST=0 MESSAGE="Climb as high as you can!"
   (for m [[-30 290 180] [125 250 200] [325 275 180] [475 240 210]]
     (circle cv m[0]+m[2] (+ m[1] (// CAM 3)) m[2] ROCK2))
   ; ground at the foot of the mountain
-  (? (< CAM 100) (rect cv 0 (+ (sy 0) 14) WW 120 (rgb 35 47 64)))
+  (? (< CAM 100)
+    (: (rect cv 0 (sy 0) WW 120 (rgb 35 47 64))
+       (rect cv 0 (sy 0) WW 4 GRASS)))
   (grow (+ (// CAM GAP) 12))
-  (for i (.. (max 0 (- (// CAM GAP) 1)) (+ (// CAM GAP) 10))
+  (for i (.. (max 1 (- (// CAM GAP) 1)) (+ (// CAM GAP) 8))
     y=(sy (* i GAP))
     x=LED[i]
     (? (&& y>20 y<470)
       (: (rect cv x y 150 14 ROCK)
          (rect cv x y+10 150 4 ROCK2)
-         (rect cv x+8 y-3 134 4 GRASS))))
-  ; little hiker (pixel art)
-  PY=(- (sy PH) 30)
+         (rect cv x y 150 4 GRASS))))
+  ; little hiker (pixel art); bends the legs while in the air
+  PY=(- (sy PH) 25)
   (rect cv PX PY 14 18 RED)
   (rect cv PX+3 PY-8 9 9 (rgb 236 183 132))
-  (rect cv PX+1 PY+17 5 8 INK)
-  (rect cv PX+9 PY+17 5 8 INK)
+  (? ONG
+    (: (rect cv PX+1 PY+17 5 8 INK) (rect cv PX+9 PY+17 5 8 INK))
+    (: (rect cv PX-1 PY+17 5 6 INK) (rect cv PX+11 PY+17 5 6 INK)))
   (rect cv PX-4 PY+3 5 12 TRAIL)
   ; HUD
-  (rrect cv 12 12 230 90 8 INK)
+  (rrect cv 12 12 250 70 8 INK)
   (text cv 24 20 "SUMMIT TRAIL" 22 WHITE)
   (text cv 24 48 (fmt "HEIGHT %d m" (// PH 10)) 15 GOLD)
-  (text cv 140 48 (fmt "BEST %d m" (// BEST 10)) 15 GOLD)
-  (text cv 24 66 (fmt "STAMINA %d%%" STAMINA) 15 GREEN)
-  (rect cv 24 86 206 8 ROCK)
-  (rect cv 24 86 (// (* 206 STAMINA) 100) 8 GREEN)
-  (rrect cv 250 12 360 72 8 INK)
-  (text cv 260 22 MESSAGE 15 WHITE)
-  (text cv 260 44 "ARROWS / WASD: move" 15 SNOW)
-  (text cv 260 64 "SPACE: rest   R: restart   Q: quit" 15 SNOW)
+  (text cv 150 48 (fmt "BEST %d m" (// BEST 10)) 15 GOLD)
+  (rrect cv 272 12 358 72 8 INK)
+  (text cv 282 22 MESSAGE 15 WHITE)
+  (text cv 282 44 "LEFT/RIGHT or A/D: move   UP/W/SPACE: jump" 15 SNOW)
+  (text cv 282 64 "R: restart   Q: quit" 15 SNOW)
+  (? OVER
+    (: (rrect cv 150 190 340 110 16 INK)
+       (text cv 235 212 "GAME OVER" 22 GOLD)
+       (text cv 190 250 (fmt "You climbed %d m. Press R." (// BEST 10)) 16 WHITE)))
   nil)
-(= (rest)
-  (<- STAMINA (min 100 (+ STAMINA 25)))
-  (<- MESSAGE "You rest and catch your breath.")
-  nil)
-(= (move dx dy)
-  nx=(clamp (+ PX (* dx 12)) 12 610)
-  nh=(max 0 (+ PH (* dy 12)))
-  ; the view follows you up and never scrolls back down
-  (? (&& (> STAMINA 0) (platform nh nx) (> (sy nh) 60) (< (sy nh) 395))
-    (: (<- PX nx) (<- PH nh) (<- STAMINA (max 0 (- STAMINA 4)))
-       (<- BEST (max BEST PH))
-       (<- CAM (max CAM (- PH 200)))
-       (<- MESSAGE "Keep climbing!"))
-    (? (== STAMINA 0) (<- MESSAGE "Out of stamina. Press SPACE to rest.")
-       (<- MESSAGE "Find a ledge before moving up.")))
+(= (key k down)
+  (? (has ["left" "a"] k) (<- LEFT down)
+     (has ["right" "d"] k) (<- RIGHT down)
+     (has ["up" "w" " " "space"] k) (<- UP down)
+     down
+     (? (has ["q" "esc"] k) (<- RUN false)
+        (has ["r"] k) (reset)))
   nil)
 (= (main)
   cv=(canvas WW WH)
-  win=(gui_open "Summit Trail - 8-bit Hiking Game" WW WH)
-  run=true
+  win=(gui_open "Summit Trail - 8-bit Climbing Game" WW WH)
+  RUN=true
   (draw cv) (gui_present win cv)
-  (wh run
-    ev=(gui_event win nil)
-    (? ev.type=="close" (<- run false)
-       (&& ev.type=="key" ev.down)
-       (: k=ev.key
-          (? (has ["q" "esc"] k) (<- run false)
-             (has ["r"] k) (: (<- PX 75) (<- PH 0) (<- CAM 0) (<- STAMINA 100) (<- MESSAGE "Climb as high as you can!"))
-             (has [" " "space"] k) (rest)
-             (has ["left" "a"] k) (move -1 0)
-             (has ["right" "d"] k) (move 1 0)
-             (has ["up" "w"] k) (move 0 1)
-             (has ["down" "s"] k) (move 0 -1))))
+  (wh RUN
+    next=(+ (clock) 16)
+    ; read every key event that arrives before the next frame is due
+    ev=(gui_event win (max 0 (- next (clock))))
+    (wh ev
+      (? ev.type=="close" (<- RUN false)
+         ev.type=="key" (key ev.key ev.down))
+      ev=(gui_event win (max 0 (- next (clock)))))
+    (step)
     (draw cv)
     (gui_present win cv))
   (gui_close win)
