@@ -12,6 +12,6 @@ ROCKS=[]
 (= (rocks_draw cv)
   (for r ROCKS
     ry=(sy r[1])
-    (? ry<0 (text cv r[0] 92 "!" 22 RED)
-       (: (circle cv r[0]+8 ry-7 9 STONE) (circle cv r[0]+5 ry-9 3 ROCK2))))
+    (? ry<0 (stext cv r[0] 92 "!" 22 RED)
+       (: (scircle cv r[0]+8 ry-7 9 STONE) (scircle cv r[0]+5 ry-9 3 ROCK2))))
   nil)

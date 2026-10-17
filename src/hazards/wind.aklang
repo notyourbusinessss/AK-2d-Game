@@ -9,5 +9,5 @@ GUST=0 GDIR=1 GS=1
     (: (<- GUST 150) (<- GDIR (? (== 0 (rand 2)) -1 1)) (<- GS (wind_power PH))))
   nil)
 (= (wind_hud cv)
-  (? (> GUST 0) (text cv 282 92 (? GDIR>0 "WIND >>>" "<<< WIND") 15 ICE))
+  (? (> GUST 0) (stext cv 282 92 (? GDIR>0 "WIND >>>" "<<< WIND") 15 ICE))
   nil)

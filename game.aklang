@@ -5,14 +5,18 @@
 (use "lib/x11.aklang")
 (use "src/config.aklang")
 (use "src/world.aklang")
+(use "src/gfx.aklang")
 (use "src/difficulty.aklang")
 (use "src/hazards/index.aklang")
 (use "src/player.aklang")
 (use "src/render.aklang")
 
 (= (main)
-  cv=(canvas WW WH)
-  win=(gui_open "Summit Trail - 8-bit Climbing Game" WW WH)
+  ; window size: `ak game.aklang 2` for 2x, otherwise the biggest scale that fits the screen
+  av=(args)
+  (<- S (? (> (# av) 0) (clamp (int (num av[0])) 1 4) (auto_scale)))
+  cv=(canvas (* WW S) (* WH S))
+  win=(gui_open "Summit Trail - 8-bit Climbing Game" (* WW S) (* WH S))
   (draw cv) (gui_present win cv)
   (wh RUN
     next=(+ (clock) 16)

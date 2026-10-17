@@ -1,0 +1,18 @@
+; Drawing through a scale factor S (1, 2, 3 or 4): the game is laid out for 640x480 and every shape
+; is multiplied by S, so a bigger window is crisp instead of stretched. Text snaps to the nearest font
+; Ak ships (15, 22 or 34 px) and never gets wider than its scaled slot.
+(= (sc v) (int (* v S)))
+(= (srect cv x y w h c) (rect cv (sc x) (sc y) (max 1 (sc w)) (max 1 (sc h)) c) nil)
+(= (srrect cv x y w h r c) (rrect cv (sc x) (sc y) (sc w) (sc h) (sc r) c) nil)
+(= (scircle cv x y r c) (circle cv (sc x) (sc y) (sc r) c) nil)
+(= (stext cv x y s size c)
+  want=(* size S)
+  (text cv (sc x) (sc y) s (? want<=18 15 want<=30 22 34) c)
+  nil)
+; the biggest whole-number scale that fits the screen with room for window borders (1..4)
+(= (auto_scale)
+  c=(x_connect nil)
+  best=1
+  (for k [2 3 4] (? (&& WW*k<=c.sw*9//10 WH*k<=c.sh*95//100) (<- best k)))
+  ($syscall 3 c.fd)
+  best)

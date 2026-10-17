@@ -1,6 +1,7 @@
 ; Constants and the core game state. Every module shares these globals.
 ; (Each hazard keeps its own state in its own file under src/hazards/.)
-WW=640 WH=480
+WW=640 WH=480     ; the game is laid out for 640x480 ...
+S=1               ; ... and drawn S times bigger (set in main)
 GAP=75            ; vertical distance between ledges
 SKY=(rgb 18 28 52)
 SNOW=(rgb 224 238 244)

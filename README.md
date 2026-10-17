@@ -4,6 +4,7 @@ A small 2D, retro/pixel-style climbing game written in **Ak**. The mountain neve
 
 ![Start](docs/start.png)
 ![Hazards: falling rocks, a crumbling ledge, wind](docs/hazards.png)
+![Running at 2x](docs/scaled-2x.png)
 
 ## Requirements
 
@@ -13,7 +14,8 @@ A small 2D, retro/pixel-style climbing game written in **Ak**. The mountain neve
 Ak's X11 and canvas libraries are bundled in `lib/` (copied from Ak 0.6.22), so nothing else is needed. From this folder run:
 
 ```sh
-ak game.aklang
+ak game.aklang      # window size picked to fit your screen (1x to 4x of 640x480)
+ak game.aklang 2    # or choose the scale yourself: 1, 2, 3 or 4
 ```
 
 ## Controls
@@ -44,6 +46,7 @@ src/difficulty.aklang  every tuning knob (ledge width, hazard rates, wind power 
 src/world.aklang       endless ledge generation; old ledges are dropped
 src/hazards/           one file per hazard (rocks.aklang, wind.aklang) + index.aklang
 src/player.aklang      input, jumping, landing, damage
+src/gfx.aklang         drawing through the scale factor, auto window size
 src/render.aklang      drawing and HUD
 tests/sim.aklang       headless long-run test
 lib/                   Ak's X11 and canvas libraries (bundled)

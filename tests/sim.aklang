@@ -4,6 +4,7 @@
 (use "../lib/canvas.aklang")
 (use "../src/config.aklang")
 (use "../src/world.aklang")
+(use "../src/gfx.aklang")
 (use "../src/difficulty.aklang")
 (use "../src/hazards/index.aklang")
 (use "../src/player.aklang")
