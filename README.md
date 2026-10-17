@@ -7,29 +7,14 @@ A small 2D, retro/pixel-style climbing game written in **Ak**. The mountain neve
 
 ## Requirements
 
-- Linux with an X11 display or XWayland
-- The [Ak language repository](https://github.com/notyourbusinessss/AI-codinglanguage-), including its `lib/x11.aklang` and `lib/canvas.aklang` files
+- Linux (x86-64) with an X11 display or XWayland
+- [Ak](https://github.com/notyourbusinessss/AI-codinglanguage-) 0.6.22 or newer (`ak --version`)
 
-The target game repository is separate from the language repository, so the X11 graphics library is not bundled here. Clone both repositories side by side, or adjust the `use` path at the top of `game.aklang`.
-
-Example layout:
-
-```text
-projects/
-  AI-codinglanguage-/
-    lib/x11.aklang
-    lib/canvas.aklang
-  AK-2d-Game/
-    game.aklang
-```
-
-With that layout, from `AK-2d-Game/` run:
+Ak's X11 and canvas libraries are bundled in `lib/` (copied from Ak 0.6.22), so nothing else is needed. From this folder run:
 
 ```sh
 ak game.aklang
 ```
-
-If `ak` isn't on your PATH, follow the setup instructions in the Ak language repository first.
 
 ## Controls
 
