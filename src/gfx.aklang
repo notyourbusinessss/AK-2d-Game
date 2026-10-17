@@ -1,13 +1,21 @@
-; Drawing through a scale factor S (1, 2, 3 or 4): the game is laid out for 640x480 and every shape
-; is multiplied by S, so a bigger window is crisp instead of stretched. Text snaps to the nearest font
-; Ak ships (15, 22 or 34 px) and never gets wider than its scaled slot.
+; Drawing through a scale factor S: the game is laid out for 640x480 and every shape is multiplied
+; by S, so any window size is crisp instead of stretched. Text uses the largest of Ak's
+; three fonts (15, 22, 34 px) that is not wider than its scaled slot.
 (= (sc v) (int (* v S)))
-(= (srect cv x y w h c) (rect cv (sc x) (sc y) (max 1 (sc w)) (max 1 (sc h)) c) nil)
-(= (srrect cv x y w h r c) (rrect cv (sc x) (sc y) (sc w) (sc h) (sc r) c) nil)
-(= (scircle cv x y r c) (circle cv (sc x) (sc y) (sc r) c) nil)
+(= (gx x) (+ OX (sc x)))
+(= (gy y) (+ OY (sc y)))
+(= (srect cv x y w h c) (rect cv (gx x) (gy y) (max 1 (sc w)) (max 1 (sc h)) c) nil)
+(= (srrect cv x y w h r c) (rrect cv (gx x) (gy y) (sc w) (sc h) (sc r) c) nil)
+(= (scircle cv x y r c) (circle cv (gx x) (gy y) (sc r) c) nil)
 (= (stext cv x y s size c)
   want=(* size S)
-  (text cv (sc x) (sc y) s (? want<=18 15 want<=30 22 34) c)
+  (text cv (gx x) (gy y) s (? want+1>=34 34 want+1>=22 22 15) c)
+  nil)
+; the window is w x h pixels: scale the 640x480 game to fit it and centre it (black bars where the shapes differ)
+(= (fit w h)
+  (<- S (max 0.5 (min (/ w WW) (/ h WH))))
+  (<- OX (int (/ (- w (sc WW)) 2)))
+  (<- OY (int (/ (- h (sc WH)) 2)))
   nil)
 ; the biggest whole-number scale that fits the screen with room for window borders (1..4)
 (= (auto_scale)

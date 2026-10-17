@@ -13,7 +13,8 @@
        (? k==1 (for q [0.25 0.5 0.75] (srect cv (+ x (int (* w q))) y+4 3 10 CRACK)))))
   nil)
 (= (draw cv)
-  (fill cv SKY)
+  (fill cv BLACK)
+  (srect cv 0 0 WW WH SKY)
   ; stars drift down slowly as you climb
   (for s [[45 35] [118 60] [220 28] [370 46] [550 30] [600 92] [290 105] [80 140] [470 120] [330 15]]
     (srect cv s[0] (% (+ s[1] (// CAM 4)) 400) 3 3 SNOW))
@@ -53,4 +54,9 @@
     (: (srrect cv 150 190 340 110 16 INK)
        (stext cv 235 212 "GAME OVER" 22 GOLD)
        (stext cv 190 250 (fmt "You climbed %d m. Press R." (// BEST 10)) 16 WHITE)))
+  ; black bars over anything that spilled outside the game area
+  (rect cv 0 0 OX cv.h BLACK)
+  (rect cv (+ OX (sc WW)) 0 (max 0 (- cv.w OX (sc WW))) cv.h BLACK)
+  (rect cv 0 0 cv.w OY BLACK)
+  (rect cv 0 (+ OY (sc WH)) cv.w (max 0 (- cv.h OY (sc WH))) BLACK)
   nil)

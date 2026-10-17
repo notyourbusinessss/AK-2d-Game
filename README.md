@@ -14,9 +14,11 @@ A small 2D, retro/pixel-style climbing game written in **Ak**. The mountain neve
 Ak's X11 and canvas libraries are bundled in `lib/` (copied from Ak 0.6.22), so nothing else is needed. From this folder run:
 
 ```sh
-ak game.aklang      # window size picked to fit your screen (1x to 4x of 640x480)
-ak game.aklang 2    # or choose the scale yourself: 1, 2, 3 or 4
+ak game.aklang      # opens at the biggest whole-number size that fits your screen
+ak game.aklang 2    # or choose the starting size yourself: 1, 2, 3 or 4 times 640x480
 ```
+
+The window can be resized freely (drag the edges or maximize it): the game scales to fit and is centred with black bars if the shape differs. It can't be made smaller than 640x480.
 
 ## Controls
 
@@ -49,7 +51,7 @@ src/player.aklang      input, jumping, landing, damage
 src/gfx.aklang         drawing through the scale factor, auto window size
 src/render.aklang      drawing and HUD
 tests/sim.aklang       headless long-run test
-lib/                   Ak's X11 and canvas libraries (bundled)
+lib/                   Ak's X11 and canvas libraries (bundled; x11.aklang is patched for resizable windows)
 ```
 
 ### Scaling

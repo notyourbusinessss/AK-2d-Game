@@ -12,11 +12,13 @@
 (use "src/render.aklang")
 
 (= (main)
-  ; window size: `ak game.aklang 2` for 2x, otherwise the biggest scale that fits the screen
+  ; start size: `ak game.aklang 2` for 2x, otherwise the biggest whole scale that fits the screen;
+  ; after that the window can be resized freely and the game follows
   av=(args)
-  (<- S (? (> (# av) 0) (clamp (int (num av[0])) 1 4) (auto_scale)))
-  cv=(canvas (* WW S) (* WH S))
-  win=(gui_open "Summit Trail - 8-bit Climbing Game" (* WW S) (* WH S))
+  s0=(? (> (# av) 0) (clamp (int (num av[0])) 1 4) (auto_scale))
+  cv=(canvas (* WW s0) (* WH s0))
+  win=(gui_open "Summit Trail - 8-bit Climbing Game" (* WW s0) (* WH s0) WW WH)   ; may grow, never shrink below 640x480
+  (fit cv.w cv.h)
   (draw cv) (gui_present win cv)
   (wh RUN
     next=(+ (clock) 16)
@@ -24,7 +26,8 @@
     ev=(gui_event win (max 0 (- next (clock))))
     (wh ev
       (? ev.type=="close" (<- RUN false)
-         ev.type=="key" (key ev.key ev.down))
+         ev.type=="key" (key ev.key ev.down)
+         ev.type=="resize" (: (<- cv (canvas ev.w ev.h)) (fit ev.w ev.h)))
       ev=(gui_event win (max 0 (- next (clock)))))
     (step)
     (draw cv)

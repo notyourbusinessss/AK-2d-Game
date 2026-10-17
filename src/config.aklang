@@ -1,7 +1,7 @@
 ; Constants and the core game state. Every module shares these globals.
 ; (Each hazard keeps its own state in its own file under src/hazards/.)
 WW=640 WH=480     ; the game is laid out for 640x480 ...
-S=1               ; ... and drawn S times bigger (set in main)
+S=1 OX=0 OY=0     ; ... and drawn S times bigger, centred at (OX, OY) in the window (see fit in gfx.aklang)
 GAP=75            ; vertical distance between ledges
 SKY=(rgb 18 28 52)
 SNOW=(rgb 224 238 244)
@@ -16,6 +16,7 @@ GOLD=(rgb 255 208 82)
 WHITE=(rgb 245 245 220)
 RED=(rgb 239 91 91)
 INK=(rgb 15 20 32)
+BLACK=(rgb 0 0 0)
 START_MSG="Climb as high as you can!"
 
 ; Ledges are kept only near the camera. LED/KIND/WID/CRT hold ledges OFF, OFF+1, ...
