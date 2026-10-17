@@ -1,7 +1,7 @@
 ; Headless long-run test: a bot (immune to rocks) climbs for a long time without a window.
 ; Checks that the game logic works, that memory stays flat (old ledges are dropped)
 ; and that the speed of a frame does not grow with height.   Run: ak tests/sim.aklang [frames]
-(use "../lib/canvas.aklang")
+(use "../lib/x11.aklang")     ; only for its drawing helpers; no window is opened
 (use "../src/config.aklang")
 (use "../src/world.aklang")
 (use "../src/gfx.aklang")
