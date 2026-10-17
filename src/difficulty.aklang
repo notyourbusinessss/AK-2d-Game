@@ -1,0 +1,10 @@
+; Every tuning knob in one place. i is a ledge number, h a height in pixels (10 px = 1 m).
+(= (ramp i) (min 60 i))                          ; difficulty grows with height, then levels off
+(= (ledge_width i) (max 90 (- 150 i)))           ; ledges narrow as you climb
+(= (crumble_pct i) (+ 8 (// (ramp i) 3)))        ; chance a new ledge crumbles (percent)
+(= (move_pct i) (+ 6 (// (ramp i) 4)))           ; chance it slides instead (percent)
+(= (rock_start) 250)                             ; rocks begin above this height
+(= (rock_every h) (max 45 (- 150 (// h 20))))    ; on average one rock per this many frames
+(= (wind_start) 400)                             ; gusts begin above this height
+(= (wind_every h) 300)                           ; on average one gust per this many frames
+(= (wind_power h) (+ 0.8 (min 1.2 (/ h 2500))))  ; pixels per frame

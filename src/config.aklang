@@ -1,4 +1,5 @@
-; Constants and the game's state. Every module shares these globals.
+; Constants and the core game state. Every module shares these globals.
+; (Each hazard keeps its own state in its own file under src/hazards/.)
 WW=640 WH=480
 GAP=75            ; vertical distance between ledges
 SKY=(rgb 18 28 52)
@@ -16,13 +17,14 @@ RED=(rgb 239 91 91)
 INK=(rgb 15 20 32)
 START_MSG="Climb as high as you can!"
 
-; ledges: left x, kind (0 plain, 1 crumbling, 2 moving), width, crumble timer (-1 untouched, 0 gone)
-LED=[35] KIND=[0] WID=[150] CRT=[-1]
+; Ledges are kept only near the camera. LED/KIND/WID/CRT hold ledges OFF, OFF+1, ...
+; left x, kind (0 plain, 1 crumbling, 2 moving), width, crumble timer (-1 untouched, 36..1 crumbling, below -1 gone and growing back).
+; Use the accessors in world.aklang, never these lists directly.
+OFF=0 LED=[35] KIND=[0] WID=[150] CRT=[-1]
 ; player: x, feet height (up is positive), vertical speed, standing?, ledge stood on, its x last frame
 PX=75 PH=0 VH=0 ONG=true GI=0 GX=35
 LEFT=false RIGHT=false UP=false RUN=true
 ; world: camera height, best height, game over, frame counter, lives, hit cooldown
-CAM=0 BEST=0 OVER=false T=0 LIVES=3 INV=0
-; hazards: falling rocks [x height], wind gust frames left / direction / strength
-ROCKS=[] GUST=0 GDIR=1 GS=1
+; PUSH is the sideways push hazards add up each frame
+CAM=0 BEST=0 OVER=false T=0 LIVES=3 INV=0 PUSH=0
 MESSAGE=START_MSG

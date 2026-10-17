@@ -1,0 +1,13 @@
+; Wind gusts: a sideways push for a couple of seconds, mostly felt in the air.
+GUST=0 GDIR=1 GS=1
+(= (wind_reset) (<- GUST 0) nil)
+(= (wind_step)
+  (? (> GUST 0)
+    (: (<- GUST (- GUST 1))
+       (<- PUSH (+ PUSH (* GDIR GS (? ONG 0.4 1)))))
+    (&& (> PH (wind_start)) (== 0 (rand (wind_every PH))))
+    (: (<- GUST 150) (<- GDIR (? (== 0 (rand 2)) -1 1)) (<- GS (wind_power PH))))
+  nil)
+(= (wind_hud cv)
+  (? (> GUST 0) (text cv 282 92 (? GDIR>0 "WIND >>>" "<<< WIND") 15 ICE))
+  nil)

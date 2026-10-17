@@ -1,0 +1,44 @@
+; Headless long-run test: a bot (immune to rocks) climbs for a long time without a window.
+; Checks that the game logic works, that memory stays flat (old ledges are dropped)
+; and that the speed of a frame does not grow with height.   Run: ak tests/sim.aklang [frames]
+(use "../lib/canvas.aklang")
+(use "../src/config.aklang")
+(use "../src/world.aklang")
+(use "../src/difficulty.aklang")
+(use "../src/hazards/index.aklang")
+(use "../src/player.aklang")
+
+; the bot always hops toward the middle of the next ledge, never dies, and respawns when it falls
+(= (autopilot)
+  t=(+ GI 1)               ; aim at the ledge above the one it last stood on
+  (grow (+ t 3))
+  cx=(+ (lx t) (// (wid t) 2))
+  (<- UP true) (<- LIVES 99) (<- OVER false) (rocks_reset)   ; the bot ignores rocks so it can climb forever
+  (? (> (sy PH) 470)
+    (: s=(+ (near CAM) 2)
+       (wh (! (solid s)) (<- s (+ s 1)))
+       (<- PX (+ (lx s) 50)) (<- PH (top s)) (<- VH 0) (<- ONG false) (<- GI s)))
+  (<- LEFT (> (+ PX 7) (+ cx 25)))
+  (<- RIGHT (< (+ PX 7) (- cx 25)))
+  nil)
+
+(= (main)
+  av=(args)
+  frames=(? (> (# av) 0) (num av[0]) 120000)
+  maxlen=0 t0=(clock) first=nil
+  (for f (.. 0 frames)
+    (autopilot)
+    (step)
+    (<- maxlen (max maxlen (# LED)))
+    (? (== 0 (% (+ f 1) (// frames 4)))
+      (: dt=(- (clock) t0)
+         (? first==nil (<- first dt))
+         (p (fmt "frame %7d  height %6d m  ledges kept %3d  last quarter: %6.0f ms" (+ f 1) (// PH 10) (# LED) dt))
+         (<- t0 (clock)))))
+  (p (fmt "best %d m, most ledges ever kept: %d" (// BEST 10) maxlen))
+  (assert (> BEST 30000) "the bot should climb past 3000 m")
+  (assert (< maxlen 120) "old ledges must be dropped")
+  (assert (< dt (* first 2.5)) "frame time must not grow with height")
+  (p "ok")
+  nil)
+(main)

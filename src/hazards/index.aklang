@@ -1,0 +1,16 @@
+; The hazard list. To add a hazard: write src/hazards/<name>.aklang with
+;   <name>_reset  ()     clear its state
+;   <name>_step   ()     once per frame; may call (hurt "message") or add to PUSH
+;   <name>_draw   (cv)   drawn behind the HUD (world space)
+;   <name>_hud    (cv)   drawn on top of the HUD
+; then add one line to HAZARDS below. Any of the four can be (nop_cv) / (nop) if unused.
+(use "rocks.aklang")
+(use "wind.aklang")
+(= (nop) nil)
+(= (nop_cv cv) nil)
+HAZARDS=[[rocks_reset rocks_step rocks_draw nop_cv]
+         [wind_reset wind_step nop_cv wind_hud]]
+(= (hazards_reset) (for h HAZARDS (h[0])) nil)
+(= (hazards_step) (<- PUSH 0) (for h HAZARDS (h[1])) nil)
+(= (hazards_draw cv) (for h HAZARDS (h[2] cv)) nil)
+(= (hazards_hud cv) (for h HAZARDS (h[3] cv)) nil)

@@ -1,11 +1,12 @@
 ; Summit Trail — an endless 8-bit-style climbing game written in Ak.
 ; Needs Ak 0.6.22 or newer. Run from this folder with: ak game.aklang
 ;   lib/      Ak's X11 window and canvas libraries (bundled)
-;   src/      config (state), world (ledges), hazards (rocks, wind), player (physics, input), render (drawing)
+;   src/      config (state), difficulty (all tuning), world (ledges), hazards/ (one file per hazard), player, render
 (use "lib/x11.aklang")
 (use "src/config.aklang")
 (use "src/world.aklang")
-(use "src/hazards.aklang")
+(use "src/difficulty.aklang")
+(use "src/hazards/index.aklang")
 (use "src/player.aklang")
 (use "src/render.aklang")
 

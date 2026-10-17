@@ -2,10 +2,10 @@
 (= (draw_ledge cv i)
   y=(sy (* i GAP))
   x=(lx i)
-  w=WID[i]
-  k=KIND[i]
-  c=CRT[i]
-  (? (&& y>20 y<470 c!=0 (|| c<0 c>12 (== 0 (% (// c 2) 2))))
+  w=(wid i)
+  k=(kind i)
+  c=(crt i)
+  (? (&& y>20 y<470 c>=-1 (|| c<0 c>12 (== 0 (% (// c 2) 2))))
     (: sh=(? (&& c>0 (== 0 (% T 2))) 2 0)
        (rect cv x+sh y w 14 (? k==1 TRAIL ROCK))
        (rect cv x+sh y+10 w 4 (? k==1 CRACK ROCK2))
@@ -25,13 +25,9 @@
     (: (rect cv 0 (sy 0) WW 120 (rgb 35 47 64))
        (rect cv 0 (sy 0) WW 4 GRASS)))
   (grow (+ (// CAM GAP) 12))
-  (for i (.. (max 1 (- (// CAM GAP) 1)) (+ (// CAM GAP) 8))
+  (for i (.. (max 1 (near CAM)) (+ (// CAM GAP) 8))
     (draw_ledge cv i))
-  ; falling rocks, with a warning mark at the top while they are still off screen
-  (for r ROCKS
-    ry=(sy r[1])
-    (? ry<0 (text cv r[0] 92 "!" 22 RED)
-       (: (circle cv r[0]+8 ry-7 9 STONE) (circle cv r[0]+5 ry-9 3 ROCK2))))
+  (hazards_draw cv)
   ; little hiker (pixel art); bends the legs in the air, blinks after a hit
   PXI=(int PX)
   PY=(- (sy PH) 25)
@@ -52,7 +48,7 @@
   (text cv 282 22 MESSAGE 15 WHITE)
   (text cv 282 44 "LEFT/RIGHT or A/D: move   UP/W/SPACE: jump" 15 SNOW)
   (text cv 282 64 "R: restart   Q: quit" 15 SNOW)
-  (? (> GUST 0) (text cv 282 92 (? GDIR>0 "WIND >>>" "<<< WIND") 15 ICE))
+  (hazards_hud cv)
   (? OVER
     (: (rrect cv 150 190 340 110 16 INK)
        (text cv 235 212 "GAME OVER" 22 GOLD)

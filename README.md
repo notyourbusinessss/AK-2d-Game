@@ -38,14 +38,26 @@ The higher you climb, the harder it gets (the ledges also get narrower):
 ## Code layout
 
 ```text
-game.aklang       window, main loop
-src/config.aklang   constants and shared state
-src/world.aklang    endless ledge generation
-src/hazards.aklang  rocks and wind
-src/player.aklang   input, jumping, landing
-src/render.aklang   drawing and HUD
-lib/                Ak's X11 and canvas libraries (bundled)
+game.aklang            window and main loop
+src/config.aklang      constants and the core game state
+src/difficulty.aklang  every tuning knob (ledge width, hazard rates, wind power ...)
+src/world.aklang       endless ledge generation; old ledges are dropped
+src/hazards/           one file per hazard (rocks.aklang, wind.aklang) + index.aklang
+src/player.aklang      input, jumping, landing, damage
+src/render.aklang      drawing and HUD
+tests/sim.aklang       headless long-run test
+lib/                   Ak's X11 and canvas libraries (bundled)
 ```
+
+### Scaling
+
+- Ledges are made on demand and forgotten once they are far below the camera, so memory and speed stay flat however high you climb.
+- Crumbled ledges grow back after 5 seconds, so a broken ledge can never block the way up.
+- `ak tests/sim.aklang [frames]` runs a bot for 120000 frames (about 23000 m) with no window and checks that the bot keeps climbing, that at most about 55 ledges are kept, and that frame time does not grow with height.
+
+### Adding a hazard
+
+Create `src/hazards/<name>.aklang` with `<name>_reset`, `<name>_step` (once per frame; may call `(hurt "message")` or add to `PUSH`), `<name>_draw cv` (behind the HUD) and `<name>_hud cv` (over it), then add one line to `HAZARDS` in `src/hazards/index.aklang`. Put its numbers in `src/difficulty.aklang`.
 
 ## Notes
 
