@@ -1,0 +1,28 @@
+; Constants and the game's state. Every module shares these globals.
+WW=640 WH=480
+GAP=75            ; vertical distance between ledges
+SKY=(rgb 18 28 52)
+SNOW=(rgb 224 238 244)
+ROCK=(rgb 88 103 119)
+ROCK2=(rgb 57 70 88)
+GRASS=(rgb 67 137 82)
+TRAIL=(rgb 191 151 92)
+CRACK=(rgb 110 80 45)
+ICE=(rgb 150 210 235)
+STONE=(rgb 150 140 130)
+GOLD=(rgb 255 208 82)
+WHITE=(rgb 245 245 220)
+RED=(rgb 239 91 91)
+INK=(rgb 15 20 32)
+START_MSG="Climb as high as you can!"
+
+; ledges: left x, kind (0 plain, 1 crumbling, 2 moving), width, crumble timer (-1 untouched, 0 gone)
+LED=[35] KIND=[0] WID=[150] CRT=[-1]
+; player: x, feet height (up is positive), vertical speed, standing?, ledge stood on, its x last frame
+PX=75 PH=0 VH=0 ONG=true GI=0 GX=35
+LEFT=false RIGHT=false UP=false RUN=true
+; world: camera height, best height, game over, frame counter, lives, hit cooldown
+CAM=0 BEST=0 OVER=false T=0 LIVES=3 INV=0
+; hazards: falling rocks [x height], wind gust frames left / direction / strength
+ROCKS=[] GUST=0 GDIR=1 GS=1
+MESSAGE=START_MSG
